@@ -1,0 +1,40 @@
+spring:
+  cloud:
+    stream:
+      bindings:
+        readKafka-in-0:
+          destination: foo
+          binder: kafka-topic
+        readRabbit-in-0:
+          group: bar
+          binder: rabbit-queue
+      binders:
+        kafka-topic:
+          type: kstream
+          environment:
+            spring.cloud.stream:
+              kafka: 
+                streams:
+                  binder:  
+                    brokers: localhost:9092
+        rabbit-queue:
+          type: rabbit
+          environment:
+            spring:
+              rabbitmq: 
+                host: localhost
+                port: 5672
+                username: guest
+                password: guest
+      function:        definition: readKafka;readRabbit
+      rabbit:        bindings: 
+          readRabbit-in-0: 
+            consumer:              acknowledge-mode: manual
+              bind-queue: false
+              declare-exchange: false
+              queue-name-group-only: true
+      kafka:        streams:          bindings:            readKafka-in-0:
+              consumer:                value.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+                schema.registry.url: http://localhost:8990
+                specific.avro.reader: true          
+logging:  level:    org.springframework: INFO

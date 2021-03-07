@@ -1,0 +1,26 @@
+spring:
+  cloud:
+    stream:
+      bindings:
+        readKafka:
+          destination: foo
+          binder: kafka-topic
+        input:
+          destination: bar
+          binder: rabbit-queue
+      binders:
+        kafka-topic:
+          type: kstream
+          environment:
+            spring.cloud.stream.kafka.streams.binder: 
+              brokers: localhost:9092
+              configuration: 
+                default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+                default.value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+        rabbit-queue:
+          type: rabbit
+          environment:
+            spring:
+              rabbitmq:
+                addresses: localhost:5672
+logging:  level:    org.springframework: INFO
